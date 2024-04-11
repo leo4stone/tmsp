@@ -15,49 +15,35 @@
     function replacePunctuation(text) {
         const punctuationMap = {
             ',': '，',
-            '.': '。',
+            '(?<!^\\d+)\\.(?!\\d)': '。',
             ';': '；',
             ':': '：',
-            '?': '？',
+            '\\?': '？',
             '!': '！',
-            '(': '（',
-            ')': '）',
-            '[': '【',
-            ']': '】',
-            '{': '｛',
-            '}': '｝',
+            '\\(': '（',
+            '\\)': '）',
+            '\\[': '【',
+            '\\]': '】',
+            '\\{': '｛',
+            '\\}': '｝',
             '<': '《',
             '>': '》',
-            '~': '～'
+            '–': '—'
         };
 
-        let quotationMarks = {
-            '"': { open: true, close: true },
-            "'": { open: true, close: true }
-        };
+        let result = text;
+        for (const [engPunc, cnPunc] of Object.entries(punctuationMap)) {
+            const regex = new RegExp(engPunc, 'gm');
+            result = result.replace(regex, cnPunc);
+        }
 
-        return text.replace(/[,.;:?!'"()\[\]{}<>~]/g, function(match) {
-            if (match === '"') {
-                if (quotationMarks[match].open) {
-                    quotationMarks[match].open = false;
-                    return '“';
-                } else {
-                    quotationMarks[match].open = true;
-                    return '”';
-                }
-            } else if (match === "'") {
-                if (quotationMarks[match].open) {
-                    quotationMarks[match].open = false;
-                    return '‘';
-                } else {
-                    quotationMarks[match].open = true;
-                    return '’';
-                }
-            } else {
-                return punctuationMap[match];
-            }
-        });
+        // 处理英文双引号
+        result = result.replace(/"([^"]*)"/g, '“$1”');
+        result = result.replace(/'([^']*)'/g, '‘$1’');
+
+        return result;
     }
+
 
     // 创建toast元素
     function createToast(message) {
