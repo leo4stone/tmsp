@@ -25,13 +25,13 @@
 
 1. 在浏览器中安装Tampermonkey扩展
    
-  【edge商店】：
-  
-  https://microsoftedge.microsoft.com/addons/detail/iikmkjmpaadaobahmlepeloendndfphd
-  
-  【chrome商店】：
-  
-  https://chromewebstore.google.com/detail/%E7%AF%A1%E6%94%B9%E7%8C%B4/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=zh-CN
+     【edge商店】：
+     
+     https://microsoftedge.microsoft.com/addons/detail/iikmkjmpaadaobahmlepeloendndfphd
+     
+     【chrome商店】：
+     
+     https://chromewebstore.google.com/detail/%E7%AF%A1%E6%94%B9%E7%8C%B4/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=zh-CN
   
 2. 进入扩展设置，点击实用工具
    
@@ -45,12 +45,12 @@
    
    Claude AI中文符号批量替换脚本 `https://raw.githubusercontent.com/leo4stone/tmsp/main/claudeai_clipboardsymbol_recn.js`
 
-5. 继续点击安装
+4. 继续点击安装
    
-  ![image](https://github.com/leo4stone/tmsp/assets/10969261/81b8200d-7a4e-4c13-974f-2757c6a889ee)
+     ![image](https://github.com/leo4stone/tmsp/assets/10969261/81b8200d-7a4e-4c13-974f-2757c6a889ee)
 
 
-6. 刷新FlowIn/TeacherIn页面即可看到样式变化
+5. 刷新FlowIn/TeacherIn页面即可看到样式变化
    在Claude AI聊天界面复制Assistant的回复,按下'c'键即可将符号替换为中文符号
 
 ## 注意事项
