@@ -20,8 +20,6 @@
             ':': '：',
             '?': '？',
             '!': '！',
-            '"': '"',
-            "'": "'",
             '(': '（',
             ')': '）',
             '[': '【',
@@ -33,8 +31,31 @@
             '~': '～'
         };
 
-        return text.replace(/[,.;:?!"'()\[\]{}<>~]/g, function(match) {
-            return punctuationMap[match];
+        let quotationMarks = {
+            '"': { open: true, close: true },
+            "'": { open: true, close: true }
+        };
+
+        return text.replace(/[,.;:?!'"()\[\]{}<>~]/g, function(match) {
+            if (match === '"') {
+                if (quotationMarks[match].open) {
+                    quotationMarks[match].open = false;
+                    return '“';
+                } else {
+                    quotationMarks[match].open = true;
+                    return '”';
+                }
+            } else if (match === "'") {
+                if (quotationMarks[match].open) {
+                    quotationMarks[match].open = false;
+                    return '‘';
+                } else {
+                    quotationMarks[match].open = true;
+                    return '’';
+                }
+            } else {
+                return punctuationMap[match];
+            }
         });
     }
 
