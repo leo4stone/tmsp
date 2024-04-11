@@ -1,4 +1,4 @@
-# FlowIn/TeacherIn样式增强与Claude AI中文符号替换
+# 油猴脚本共享
 
 这个项目包含三个用户脚本,用于增强FlowIn/TeacherIn网站的样式,以及在Claude AI聊天界面中实现中文符号的批量替换。
 
