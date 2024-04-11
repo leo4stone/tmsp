@@ -25,9 +25,13 @@
 
 1. 在浏览器中安装Tampermonkey扩展
    
-  【edge商店】https://microsoftedge.microsoft.com/addons/detail/iikmkjmpaadaobahmlepeloendndfphd
+  【edge商店】：
   
-  【chrome商店】https://chromewebstore.google.com/detail/%E7%AF%A1%E6%94%B9%E7%8C%B4/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=zh-CN
+  https://microsoftedge.microsoft.com/addons/detail/iikmkjmpaadaobahmlepeloendndfphd
+  
+  【chrome商店】：
+  
+  https://chromewebstore.google.com/detail/%E7%AF%A1%E6%94%B9%E7%8C%B4/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=zh-CN
   
 2. 进入扩展设置，点击实用工具
    
