@@ -15,7 +15,7 @@
     function replacePunctuation(text) {
         const punctuationMap = {
             ',': '，',
-            '(?<!^\\d+)\\.(?!\\d)': '。',
+            '(?<!^\\s*\\d+)\\.(?!\\d)': '。',
             ';': '；',
             ':': '：',
             '\\?': '？',
