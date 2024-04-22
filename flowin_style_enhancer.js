@@ -1,98 +1,93 @@
 // ==UserScript==
-// @name         Claude AI 中文符合批量替换
-// @namespace    http://tampermonkey.net/
-// @version      2024-04-11
+// @name         flowin样式增强
+// @namespace    https://flowin.cn/
+// @version      2024-02-29
 // @description  try to take over the world!
 // @author       You
-// @match        https://claude.ai/chat/*
-// @icon         https://www.google.com/s2/favicons?sz=64&domain=claude.ai
+// @match        https://flowin.cn/*
+// @match        https://www.teacherin.cn/*
+// @icon         https://www.google.com/s2/favicons?sz=64&domain=tampermonkey.net
 // @grant        none
 // ==/UserScript==
 
 (function() {
     'use strict';
-    // 定义符号替换函数
-    function replacePunctuation(text) {
-        const punctuationMap = {
-            ',': '，',
-            '(?<!^\\s*\\d+)\\.(?!\\d)': '。',
-            ';': '；',
-            ':': '：',
-            '\\?': '？',
-            '!': '！',
-            '\\(': '（',
-            '\\)': '）',
-            '\\[': '【',
-            '\\]': '】',
-            '\\{': '｛',
-            '\\}': '｝',
-            '<': '《',
-            '>': '》',
-            '–': '—'
+    let pageWrapFullWidth={
+        status:true,
+        style:`.page-body .page-wrap{width:100% !important; max-width:9999px !important;}`
+    }
+    function pageStyleUpdate(){
+        let styleName="myFlowin";
+        let styleDomId=`_${styleName}SuperStyle`
+        let styleDom=document.head.querySelector(`#`+styleDomId);
+        if(!styleDom){
+            styleDom=document.createElement('style');
+            styleDom.id=styleDomId;
+            document.head.appendChild(styleDom);
+        }
+        styleDom.innerHTML=`
+/*着重组件内的段落间距*/
+.eeo-tree-outer-box[data-type="e-callout"] p + p{margin:0.8em 0 0 0 !important;}
+
+/*字体修复*/
+.ql-container{
+font-family:"微软雅黑" !important;
+}
+body{
+font-family:"微软雅黑" !important;
+}
+
+
+/*文档容器最大宽度*/
+${pageWrapFullWidth.status?pageWrapFullWidth.style:''}
+/*画布最大宽度*/
+.eeo-tree-outer-box[data-type="e-board"]{max-width:1280px !important; margin-left:auto !important;margin-right:auto !important;}
+
+/*列表数字强调*/
+.serial_number{ font-weight: bold !important; opacity:1 !important; }
+.serial_number::after{ content:"|"; font-size:1em; transform: rotate(90deg) translate(8px, 9px); opacity:.4 !important; }
+`
+console.log("flowIn样式已增强",pageWrapFullWidth);
+    }
+    function fullWidthBtnInit(){
+        var parentPath='#toolbar-component .toolbar-content .toolbar-list-box'
+        var btnParent=document.body.querySelector(parentPath);
+        if(!btnParent){
+            return false;
         };
-
-        let result = text;
-        for (const [engPunc, cnPunc] of Object.entries(punctuationMap)) {
-            const regex = new RegExp(engPunc, 'gm');
-            result = result.replace(regex, cnPunc);
+        let btnDom=btnParent.querySelector('#myFullWidthSwitch');
+        if(btnDom){
+            return false;
         }
-
-        // 处理英文双引号
-        result = result.replace(/"([^"]*)"/g, '“$1”');
-        result = result.replace(/'([^']*)'/g, '‘$1’');
-
-        return result;
-    }
-
-
-    // 创建toast元素
-    function createToast(message) {
-        const toast = document.createElement('div');
-        toast.textContent = message;
-        toast.style.position = 'fixed';
-        toast.style.bottom = '20px';
-        toast.style.left = '50%';
-        toast.style.transform = 'translateX(-50%)';
-        toast.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
-        toast.style.color = 'white';
-        toast.style.padding = '10px';
-        toast.style.borderRadius = '5px';
-        document.body.appendChild(toast);
-        return toast;
-    }
-    document.addEventListener('click', function(event) {
-        const target = event.target;
-        if (target && typeof target.innerHTML === 'string' && target.innerHTML.toLowerCase().includes('copy')) {
-            // 延迟执行,等待剪贴板更新
-            setTimeout(function() {
-                navigator.clipboard.readText().then(function(text) {
-                    const toast = createToast('复制了新内容,按下c将复制的内容中的符号替换为中文符号');
-
-                    // 监听窗口按键事件
-                    const handleKeyPress = function(event) {
-                        if (event.key === 'c') {
-                            const processedText = replacePunctuation(text);
-                            navigator.clipboard.writeText(processedText).then(function() {
-                                toast.textContent = '剪贴板已更新';
-                                setTimeout(function() {
-                                    toast.remove();
-                                }, 1000);
-                            });
-                            window.removeEventListener('keypress', handleKeyPress);
-                        }
-                    };
-
-                    window.addEventListener('keypress', handleKeyPress);
-
-                    // 如果用户没有按下c,两秒后移除监听事件和toast
-                    setTimeout(function() {
-                        window.removeEventListener('keypress', handleKeyPress);
-                        toast.remove();
-                    }, 2000);
-                });
-            }, 100);
+        btnDom=document.createElement('div');
+        btnDom.id='myFullWidthSwitch';
+        btnDom.className="toolbar-list-item toolbar-button";
+        function btnHtmlUpdate(){
+            let btnDomHTML={
+                onTrue:{
+                    icon:'💻',
+                    content:'全宽度已开启'
+                },
+                onFalse:{
+                    icon:'📱',
+                    content:'全宽度已关闭'
+                }
+            }
+            btnDom.innerHTML=`
+<div class="item-icon">${pageWrapFullWidth.status?btnDomHTML.onTrue.icon:btnDomHTML.onFalse.icon}</div>
+<div class="item-content">${pageWrapFullWidth.status?btnDomHTML.onTrue.content:btnDomHTML.onFalse.content}</div>
+`
         }
-    });
-
+        btnHtmlUpdate();
+        btnDom.addEventListener("click",function(){
+            pageWrapFullWidth.status = !pageWrapFullWidth.status;
+            btnHtmlUpdate();
+            pageStyleUpdate();
+        },false);
+        btnParent.appendChild(btnDom);
+        console.log("flowIn全宽度按钮已注入",pageWrapFullWidth);
+    }
+    setInterval(fullWidthBtnInit,500);
+    pageStyleUpdate();
     // Your code here...
 })();
