@@ -44,8 +44,18 @@ ${pageWrapFullWidth.status?pageWrapFullWidth.style:''}
 .eeo-tree-outer-box[data-type="e-board"]{max-width:1280px !important; margin-left:auto !important;margin-right:auto !important;}
 
 /*列表数字强调*/
-.serial_number{ font-weight: bold !important; opacity:1 !important; }
-.serial_number::after{ content:"|"; font-size:1em; transform: rotate(90deg) translate(8px, 9px); opacity:.4 !important; }
+.serial_number{ font-weight: bold !important; opacity:1 !important; text-shadow:
+0px -1px 0px rgba(255,255,255,1),
+1px -1px 0px rgba(255,255,255,1),
+1px 0px 0px rgba(255,255,255,1),
+1px 1px 0px rgba(255,255,255,1),
+0px 1px 0px rgba(255,255,255,1),
+-1px 1px 0px rgba(255,255,255,1),
+-1px 0px 0px rgba(255,255,255,1),
+-1px -1px 0px rgba(255,255,255,1),
+0px 0px 3px rgba(0,0,0,0.5);
+transform: scale(1.2);
+}
 `
 console.log("flowIn样式已增强",pageWrapFullWidth);
     }
