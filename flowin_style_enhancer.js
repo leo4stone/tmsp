@@ -99,5 +99,46 @@ console.log("flowIn样式已增强",pageWrapFullWidth);
     }
     setInterval(fullWidthBtnInit,500);
     pageStyleUpdate();
+
+    document.addEventListener('contextmenu', function(event) {
+        let target = event.target;
+        // 检查点击元素的最近祖先元素是否具有[data-block-container-for]属性
+        let ancestorWithAttribute = target.closest('[data-block-container-for]');
+        if (ancestorWithAttribute) {
+            event.preventDefault(); // 阻止默认的右键菜单弹出
+        }
+    }, true);
+
+    document.addEventListener('mousedown', function(event) {
+        // 检查是否按下了鼠标右键
+        if (event.button === 2) {
+            event.preventDefault(); // 阻止默认的右键菜单弹出
+            console.warn('No.1: Right-click detected.');
+            let target = event.target;
+
+            // 检查点击元素的最近祖先元素是否具有[data-block-container-for]属性
+            let ancestorWithAttribute = target.closest('[data-block-container-for]');
+            if (ancestorWithAttribute) {
+                console.warn('No.2: Ancestor element with [data-block-container-for] found.');
+                event.preventDefault(); // 阻止默认的右键行为
+
+                // 获取data-block-container-for的值a
+                let a = ancestorWithAttribute.getAttribute('data-block-container-for');
+                let bTarget= ancestorWithAttribute.parentElement
+
+                // 通过查找ancestorWithAttribute的以__reactFiber开头的属性获取b
+                let reactFiberProperty = Object.keys(bTarget).find(key => key.startsWith('__reactFiber'));
+                if (reactFiberProperty) {
+                    let b = bTarget[reactFiberProperty].return.memoizedProps.blockId;
+                    console.warn('No.3: blockId found through __reactFiber property.');
+
+                    // 新窗口打开URL
+                    let url = `/doc/${b}?pid=${a}`;
+                    console.warn('No.4: Opening new window with URL:', url);
+                    window.open(url, '_blank');
+                }
+            }
+        }
+    }, true);
     // Your code here...
 })();
