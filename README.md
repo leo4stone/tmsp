@@ -41,12 +41,12 @@
    ![image](https://github.com/leo4stone/tmsp/assets/10969261/82356ef7-b8e4-4d21-9e62-5a4b7cf2308c)
 
 3. 粘贴下方网址到“从URL安装”，点击安装
+   请根据自己的需要选择要用到的脚本
    
-   FlowIn样式增强脚本 `https://raw.githubusercontent.com/leo4stone/tmsp/main/flowin_style_enhancer.js`
-   
-   TeacherIn样式增强脚本 `https://raw.githubusercontent.com/leo4stone/tmsp/main/teacherin_nbstyle_enhancer.js`
-   
-   Claude AI中文符号批量替换脚本 `https://raw.githubusercontent.com/leo4stone/tmsp/main/claudeai_clipboardsymbol_recn.js`
+   | 脚本名称 | 安装地址 |
+   | --- | --- |
+   | FlowIn样式增强脚本 | `https://raw.githubusercontent.com/leo4stone/tmsp/main/flowin_style_enhancer.js` |
+   | TeacherIn样式增强脚本 | `https://raw.githubusercontent.com/leo4stone/tmsp/main/teacherin_nbstyle_enhancer.js` |
 
 4. 继续点击安装
    
