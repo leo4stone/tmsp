@@ -150,11 +150,8 @@
         e.stopPropagation();
         
         try {
-            console.group('处理点击事件');
             const target = e.target;
             if (!target || target === document.body) {
-                console.log('无效的目标元素');
-                console.groupEnd();
                 return;
             }
 
@@ -165,13 +162,11 @@
 
             // 直接获取目标元素的HTML
             const originalHtml = target.outerHTML;
-            console.log('原始HTML：', originalHtml);
             
             // 转换为Markdown
             const markdown = convertHtmlToMarkdown(originalHtml);
             
             if (markdown) {
-                console.log('最终转换结果：', markdown);
                 // 确保markdown文本中的特殊字符被正确保留
                 const processedMarkdown = markdown
                     .replace(/\r\n/g, '\n')  // 统一换行符
@@ -181,16 +176,12 @@
                 GM_setClipboard(processedMarkdown, 'text/plain');
                 showToast('已复制到剪贴板！');
             } else {
-                console.log('转换结果为空');
                 showToast('没有找到可转换的内容');
             }
             
-            console.groupEnd();
             // 清理事件监听
             cleanup();
         } catch (error) {
-            console.error('处理点击事件时出错：', error);
-            console.groupEnd();
             showToast('转换过程中出现错误');
             cleanup();
         }
@@ -207,39 +198,93 @@
         function isHeading(node) {
             if (!node) return 0;
             
-            // 1. 检查标签名
+            let result = 0;
+            
+            // 1. 检查标签名 (最高优先级)
             const tagName = node.tagName.toLowerCase();
+            
             if (tagName.match(/^h[1-6]$/)) {
-                return parseInt(tagName.charAt(1));
+                const level = parseInt(tagName.charAt(1));
+                return level;
             }
             
             // 2. 检查class名称中的提示
             const className = node.className || '';
+            
+            let classNameLevel = 0;
             if (className.toLowerCase().includes('title') || 
                 className.toLowerCase().includes('heading') ||
                 className.toLowerCase().includes('header')) {
-                return 1;  // 假定为h1
+                
+                // 尝试从类名中提取更精确的标题级别
+                const headingMatch = className.match(/heading-h(\d)/i) || className.match(/h(\d)-heading/i) || className.match(/h(\d)/i);
+                if (headingMatch && headingMatch[1]) {
+                    classNameLevel = parseInt(headingMatch[1]);
+                    if (classNameLevel >= 1 && classNameLevel <= 6) {
+                        // 有效的标题级别
+                    } else {
+                        classNameLevel = 1; // 默认为h1
+                    }
+                } else {
+                    classNameLevel = 1; // 默认为h1
+                }
             }
             
-            // 3. 检查计算样式
-            const computedStyle = window.getComputedStyle(node);
-            const fontSize = parseFloat(computedStyle.fontSize);
-            const fontWeight = computedStyle.fontWeight;
-            const display = computedStyle.display;
+            // 3. 检查计算样式和行内样式 (最高优先级)
+            let fontSize = 0;
+            let fontWeight = 'normal';
+            try {
+                // 如果节点不在文档中，临时将其添加到文档中以获取正确的计算样式
+                let needsToBeAdded = !document.contains(node);
+                let tempParent;
+                if (needsToBeAdded) {
+                    tempParent = document.createElement('div');
+                    tempParent.style.cssText = 'position:absolute;left:-9999px;top:-9999px;';
+                    tempParent.appendChild(node.cloneNode(true));
+                    document.body.appendChild(tempParent);
+                }
+
+                const computedStyle = window.getComputedStyle(needsToBeAdded ? tempParent.firstChild : node);
+                fontSize = parseFloat(computedStyle.fontSize) || 16; // 如果获取失败，使用默认值16px
+                fontWeight = computedStyle.fontWeight || 'normal';
+
+                if (needsToBeAdded && tempParent) {
+                    document.body.removeChild(tempParent);
+                }
+            } catch (error) {
+                fontSize = 16; // 发生错误时使用默认值
+            }
             
             // 4. 检查行内样式
             const style = node.getAttribute('style') || '';
             const inlineFontSize = style.match(/font-size:\s*(\d+)px/);
+            
             if (inlineFontSize) {
                 fontSize = parseFloat(inlineFontSize[1]);
             }
             
-            // 根据字体大小和粗细判断标题级别
-            if (fontSize >= 24 || fontWeight >= 700) return 1;  // h1
-            if (fontSize >= 20) return 2;  // h2
-            if (fontSize >= 16 && fontWeight >= 600) return 3;  // h3
+            // 根据字体大小判断标题级别
+            let fontSizeLevel = 0;
+            if (fontSize >= 30) {
+                fontSizeLevel = 1;
+            }
+            else if (fontSize >= 20) {
+                fontSizeLevel = 2;
+            }
+            else if (fontSize >= 16 && (fontWeight === 'bold' || fontWeight === '700' || parseInt(fontWeight) >= 600)) {
+                fontSizeLevel = 3;
+            }
             
-            return 0;  // 不是标题
+            // 优先使用字体大小判断的结果
+            if (fontSizeLevel > 0) {
+                result = fontSizeLevel;
+            } 
+            // 如果字体大小判断不出结果，但类名判断有结果，则使用类名判断的结果
+            else if (classNameLevel > 0) {
+                result = classNameLevel;
+            }
+            
+            return result;
         }
         
         function processNode(node) {
@@ -267,7 +312,6 @@
                             .filter(text => text) // 过滤空文本
                             .join('');
                     } catch (childError) {
-                        console.warn('处理子节点时出错：', childError);
                         content = node.innerText || node.textContent || '';
                     }
                     
@@ -359,7 +403,6 @@
                     return content;
                 }
             } catch (nodeError) {
-                console.warn('处理节点时出错：', nodeError);
                 return node.innerText || node.textContent || '';
             }
             
@@ -383,7 +426,6 @@
             
             return markdown;
         } catch (error) {
-            console.error('转换Markdown时出错：', error);
             return '';
         }
     }
