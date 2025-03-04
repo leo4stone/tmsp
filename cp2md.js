@@ -27,8 +27,9 @@
 
         .cp2md-toast {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
             padding: 12px 24px;
             background: rgba(0, 0, 0, 0.8);
             color: white;
