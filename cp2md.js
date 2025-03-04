@@ -46,21 +46,57 @@
         }
     `);
 
+    // 全局变量，用于跟踪当前显示的toast元素
+    let currentToast = null;
+
     // 显示Toast提示
     function showToast(message, duration = 2000) {
+        // 如果有正在显示的toast，先移除它
+        if (currentToast) {
+            currentToast.classList.remove('show');
+            currentToast.remove();
+            currentToast = null;
+        }
+
         const toast = document.createElement('div');
         toast.className = 'cp2md-toast';
         toast.textContent = message;
         document.body.appendChild(toast);
+        currentToast = toast;
 
         // 强制重绘
         toast.offsetHeight;
         toast.classList.add('show');
 
-        setTimeout(() => {
+        // 如果duration为0，则不自动关闭
+        if (duration > 0) {
+            setTimeout(() => {
+                if (toast === currentToast) {  // 确保这是最新的toast
+                    toast.classList.remove('show');
+                    setTimeout(() => {
+                        if (toast === currentToast) {
+                            toast.remove();
+                            currentToast = null;
+                        }
+                    }, 300);
+                }
+            }, duration);
+        }
+        
+        return toast;  // 返回toast元素，以便后续可以手动关闭
+    }
+
+    // 关闭指定的toast
+    function closeToast(toast) {
+        if (toast) {
             toast.classList.remove('show');
-            setTimeout(() => toast.remove(), 300);
-        }, duration);
+            setTimeout(() => {
+                toast.remove();
+                if (currentToast === toast) {
+                    currentToast = null;
+                }
+            }, 300);
+        }
     }
 
     let isSelecting = false;
@@ -160,27 +196,41 @@
                 el.classList.remove('cp2md-highlight');
             });
 
-            // 直接获取目标元素的HTML
-            const originalHtml = target.outerHTML;
-            
-            // 转换为Markdown
-            const markdown = convertHtmlToMarkdown(originalHtml);
-            
-            if (markdown) {
-                // 确保markdown文本中的特殊字符被正确保留
-                const processedMarkdown = markdown
-                    .replace(/\r\n/g, '\n')  // 统一换行符
-                    .replace(/\n/g, '\r\n'); // 转换为Windows风格换行符
+            // 显示"正在处理"的提示，不自动关闭
+            const processingToast = showToast('正在处理...', 0);
+
+            // 使用setTimeout让UI有机会更新
+            setTimeout(() => {
+                try {
+                    // 直接获取目标元素的HTML
+                    const originalHtml = target.outerHTML;
+                    
+                    // 转换为Markdown
+                    const markdown = convertHtmlToMarkdown(originalHtml);
+                    
+                    // 关闭处理中的提示
+                    closeToast(processingToast);
+                    
+                    if (markdown) {
+                        // 确保markdown文本中的特殊字符被正确保留
+                        const processedMarkdown = markdown
+                            .replace(/\r\n/g, '\n')  // 统一换行符
+                            .replace(/\n/g, '\r\n'); // 转换为Windows风格换行符
+                        
+                        // 使用text/plain格式设置剪贴板
+                        GM_setClipboard(processedMarkdown, 'text/plain');
+                        showToast('已复制到剪贴板！');
+                    } else {
+                        showToast('没有找到可转换的内容');
+                    }
+                } catch (error) {
+                    closeToast(processingToast);
+                    showToast('转换过程中出现错误');
+                }
                 
-                // 使用text/plain格式设置剪贴板
-                GM_setClipboard(processedMarkdown, 'text/plain');
-                showToast('已复制到剪贴板！');
-            } else {
-                showToast('没有找到可转换的内容');
-            }
-            
-            // 清理事件监听
-            cleanup();
+                // 清理事件监听
+                cleanup();
+            }, 10);
         } catch (error) {
             showToast('转换过程中出现错误');
             cleanup();
