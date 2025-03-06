@@ -121,8 +121,8 @@
 
         menuItem.style.cssText = `
             position: fixed;
-            left: ${e.clientX - menuWidth}px;
-            top: ${e.clientY - menuHeight}px;
+            left: ${e.clientX - menuWidth -20}px;
+            top: ${e.clientY - menuHeight -20}px;
             background: white;
             border: 1px solid #ccc;
             padding: 5px 10px;
